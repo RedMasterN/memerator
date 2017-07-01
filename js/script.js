@@ -10,16 +10,21 @@ d('[type=file]').addEventListener("change", function(event) {
             img = new Image();
             img.onload = function() {
                 if (Math.min(img.height, img.width) < 256) watermark = 0;
-                canvas.width = img.width, canvas.height = img.height;
+                max = Math.max(img.height, img.width), min = Math.min(img.height, img.width), maxSide = max==img.width?'width':'height', minSide = maxSide=='width'?'height':'width';
+                if (Math.max(img.height, img.width) >= 1024) canvas[maxSide] = 1024, canvas[minSide] = (1024/max)*min;
+                else canvas.width = img.width, canvas.height = img.height;
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+                // if (!resized) resized = 1, img.src=canvas.toDataURL();
                 d('#download').id = '', d('#advanced').id = '';
                 color = $('.jscolor').css('background-color');
                 ctx.textAlign = "center", ctx.fillStyle = color, ctx.strokeStyle = '#000',
                 ctx.font = (canvas.height / 8) + "px " + font, ctx.lineWidth = canvas.height / 64;
-                ctx.strokeText(document.querySelectorAll('input')[1].value, canvas.width / 2, canvas.height / 7);
-                ctx.strokeText(document.querySelectorAll('input')[2].value, canvas.width / 2, canvas.height - (canvas.height / 17));
-                ctx.fillText(document.querySelectorAll('input')[1].value, canvas.width / 2, canvas.height / 7);
-                ctx.fillText(document.querySelectorAll('input')[2].value, canvas.width / 2, canvas.height - (canvas.height / 17));
+                // ctx.strokeText(document.querySelectorAll('input')[1].value, canvas.width / 2, canvas.height / 7);
+                // ctx.strokeText(document.querySelectorAll('input')[2].value, canvas.width / 2, canvas.height - (canvas.height / 17));
+                // ctx.fillText(document.querySelectorAll('input')[1].value, canvas.width / 2, canvas.height / 7);
+                // ctx.fillText(document.querySelectorAll('input')[2].value, canvas.width / 2, canvas.height - (canvas.height / 17));
+                if (Math.max(img.height, img.width) >= 1024) canvas[maxSide] = 1024, canvas[minSide] = (1024/max)*min;
+                setTimeout(function(){img.onload=null,img.src=canvas.toDataURL()}, 1000);
                 d('a').href = canvas.toDataURL();
                 $('.row').css('visibility', 'visible');
                 $('#upload').html('Replace' + $('#upload').html().replace('Upload', ''));
